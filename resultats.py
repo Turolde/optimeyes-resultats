@@ -196,7 +196,7 @@ for indicateur in indicateurs_jauge:
             message = "Difficulté à détecter les faibles contrastes."
             couleur_fond = "#8b1e3f"
 
-        col = col1 if compteur_affiches % 2 == 0 else col2
+        col = col1 if compteur % 2 == 0 else col2
         with col:
             st.markdown(
                 f"""
@@ -207,7 +207,7 @@ for indicateur in indicateurs_jauge:
                 """,
                 unsafe_allow_html=True
             )
-        compteur_affiches += 1
+        compteur += 1
         continue
     else:
         couleurs = None
