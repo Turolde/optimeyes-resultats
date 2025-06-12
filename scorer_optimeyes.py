@@ -201,19 +201,37 @@ def scorer_profil(d):
     }
 
 def afficher_radar(valeurs, taille=(4, 4), titre=None):
+    couleurs_profils = {
+        "Athlète": "#90CBC1",
+        "Pilote": "#A5B4DC",
+        "E-sportif": "#D8A5B8",
+        "Performer cognitif": "#B6A49C"
+    }
+
     labels = list(valeurs.keys())
     donnees = list(valeurs.values())
     donnees += donnees[:1]
     angles = [n / float(len(labels)) * 2 * np.pi for n in range(len(labels))] + [0]
+
     fig, ax = plt.subplots(figsize=taille, subplot_kw=dict(polar=True))
     fig.patch.set_facecolor('#cccaca')
     ax.plot(angles, donnees, linewidth=2, color='#444')
-    ax.fill(angles, donnees, color='#8888ff', alpha=0.25)
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(labels)
+
+    # Remplir chaque secteur avec la couleur du profil
+    for i in range(len(labels)):
+        angle0 = angles[i]
+        angle1 = angles[i + 1]
+        r = [0, donnees[i], donnees[i + 1], 0]
+        theta = [angle0, angle0, angle1, angle1]
+        ax.fill(theta, r, color=couleurs_profils.get(labels[i], "#999"), alpha=0.25, linewidth=0)
+
     if titre:
         ax.set_title(titre, fontsize=12, pad=20)
+
     st.pyplot(fig)
+
 
 def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_colors=None):
     # Couleurs par défaut cohérentes avec l'app principale
