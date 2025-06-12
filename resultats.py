@@ -101,9 +101,9 @@ if resultat["alerte_discordance"]:
 st.subheader("🎯 Résultat du Profiling")
 col_g, col_d = st.columns([6, 4])
 with col_g:
-    st.markdown("### 🔄 Score par profil")
     afficher_radar(resultat["scores"])
 with col_d:
+    st.markdown("### 🔄 Score par profil")
     for profil, score in resultat["scores"].items():
         couleur = {
             "Athlète": "#90CBC1", "Pilote": "#A5B4DC",
