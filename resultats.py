@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload
 
 # --- CONFIGURATION ---
-FICHIER_ID_DRIVE = "TON_ID_DU_FICHIER_XLSX_SUR_DRIVE"
+FICHIER_ID_DRIVE = "162CoThxy9GcuJIWLB_jcpGxXBWsUz7UD"
 
 # --- Connexion au Google Drive ---
 def connect_drive():
@@ -42,8 +42,7 @@ st.image("optimeyes_logo_black.png", width=400)
 st.title("🎫 Passeport Visuo-Cognitif")
 
 # --- Récupérer l'ID de l'URL ---
-params = st.experimental_get_query_params()
-url_id = params.get("id", [None])[0]
+url_id = st.query_params.get("id")
 
 if not url_id:
     st.error("❌ Aucun identifiant de profil fourni dans l'URL.")
