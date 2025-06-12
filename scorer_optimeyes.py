@@ -217,7 +217,7 @@ def afficher_radar(valeurs, taille=(4, 4), titre=None):
 
 def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_colors=None):
     # Couleurs par défaut cohérentes avec l'app principale
-    default_colors = ["#66ccaa", "#b5d991", "#ffd580", "#ff9c8a", "#d66a6a"]
+    default_colors = ["#ff4d4d", "#ff944d", "#ffd633", "#4caf50", "#2196f3", "#9c27b0"]
     couleurs = custom_colors if custom_colors else default_colors
 
     try:
