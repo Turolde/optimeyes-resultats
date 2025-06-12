@@ -37,8 +37,7 @@ def charger_profil(url_id):
     return ligne
 
 # --- UI ---
-donnees = ligne.iloc[0].to_dict()
-resultat = scorer_profil(donnees)
+
 
 st.set_page_config(page_title="Passeport Visuel Optimeyes", layout="centered")
 st.image("optimeyes_logo_black.png", width=400)
@@ -55,7 +54,8 @@ if ligne.empty:
     st.error("❌ Profil introuvable.")
     st.stop()
 
-
+donnees = ligne.iloc[0].to_dict()
+resultat = scorer_profil(donnees)
 
 # --- Scores principaux ---
 col1, col2 = st.columns(2)
