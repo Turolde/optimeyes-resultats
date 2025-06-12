@@ -216,26 +216,41 @@ def afficher_radar(valeurs, taille=(4, 4), titre=None):
     st.pyplot(fig)
 
 def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_colors=None):
-    default_colors = ["#ff4d4d", "#ff944d", "#ffd633", "#4caf50", "#2196f3", "#9c27b0"]
+    # Couleurs par défaut cohérentes avec l'app principale
+    default_colors = ["#66ccaa", "#b5d991", "#ffd580", "#ff9c8a", "#d66a6a"]
     couleurs = custom_colors if custom_colors else default_colors
+
     try:
         bornes = sorted([float(b) for b in bornes_abs if str(b).strip() != ""])
     except:
         bornes = []
+
     bornes = [min_val] + bornes + [max_val]
     zones = list(zip(bornes[:-1], bornes[1:]))
+
     fig, ax = plt.subplots(figsize=(5, 0.6))
     fig.patch.set_facecolor('#cccaca')
     ax.set_facecolor('#e0e0e0')
+
     for i, (start, end) in enumerate(zones):
         color = couleurs[i] if i < len(couleurs) else "#cccccc"
         ax.barh(0, end - start, left=start, color=color, edgecolor="white")
+
     ax.axvline(valeur, color="#004080", linewidth=1)
-    ax.text(valeur, -0.6, f"{valeur:.0f}", ha='center', va='top', fontsize=11, color="#004080", fontweight='bold')
+    ax.text(
+        valeur, -0.6,
+        f"{valeur:.0f}",
+        ha='center',
+        va='top',
+        fontsize=11,
+        color="#004080",
+        fontweight='bold'
+    )
     ax.set_xlim(min_val, max_val)
     ax.set_yticks([])
     ax.set_xticks([min_val, max_val])
     ax.set_title(nom, fontsize=13, loc='left')
     for spine in ax.spines.values():
         spine.set_visible(False)
+
     return fig
