@@ -93,7 +93,7 @@ def scorer_profil(d):
     coherence = "Très bonne" if ecart < 10 else "Moyenne" if ecart < 25 else "Faible"
     alerte_discordance = ecart >= 25
 
-    radar_analytique = {
+    _analytique = {
         "Vitesse visuelle": round((noter("Vitesse_Horizontale", d.get("Vitesse_Horizontale", 0)) + noter("Vitesse_Verticale", d.get("Vitesse_Verticale", 0))) / 2 * 33.33, 1),
         "Résolution spatiale": round((noter("Vision_Faible_Contraste", d.get("Vision_Faible_Contraste", 0)) + (noter("Stereopsie", d.get("Stereopsie", 0)) if stereopsie_activee else 0)) / (2 if stereopsie_activee else 1) * 33.33, 1),
         "Attention périphérique": round(noter("Vision_Peri", d.get("Vision_Peri", 0)) * 33.33, 1),
@@ -126,16 +126,20 @@ def scorer_profil(d):
 
 def afficher_radar(valeurs, taille=(4, 4), titre=None):
     labels = list(valeurs.keys())
-    donnees = list(valeurs.values()) + [donnees[0]]
+    donnees = list(valeurs.values())
+    donnees += donnees[:1]  # fermer le cercle
     angles = [n / float(len(labels)) * 2 * np.pi for n in range(len(labels))] + [0]
+
     fig, ax = plt.subplots(figsize=taille, subplot_kw=dict(polar=True))
     fig.patch.set_facecolor('#cccaca')
     ax.plot(angles, donnees, linewidth=2, color='#444')
     ax.fill(angles, donnees, color='#8888ff', alpha=0.25)
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(labels)
+
     if titre:
         ax.set_title(titre, fontsize=12, pad=20)
+
     st.pyplot(fig)
 
 def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_colors=None):
