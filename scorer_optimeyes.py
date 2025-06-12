@@ -3,6 +3,82 @@ import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
 
+commentaires_indicateurs = {
+    "Decision_Visuelle": {
+        3: "Décision très rapide, excellente réactivité.",
+        2: "Décision de vitesse moyenne, correcte dans l’ensemble.",
+        1: "Décision lente, réactivité diminuée.",
+        0: "Donnée absente ou non interprétable sur la capacité décisionnelle."
+    },
+    "Fatigue_Visuelle": {
+        3: "Très faible fatigue visuelle ressentie.",
+        2: "Fatigue visuelle modérée.",
+        1: "Fatigue visuelle importante signalée.",
+        0: "Fatigue visuelle non renseignée ou incohérente."
+    },
+    "Sensibilite_Lumineuse": {
+        3: "Aucune sensibilité à la lumière signalée.",
+        2: "Sensibilité occasionnelle à la lumière.",
+        1: "Sensibilité marquée à la lumière.",
+        0: "Aucune donnée disponible sur la sensibilité lumineuse."
+    },
+    "Vision_Peri": {
+        3: "Vision périphérique jugée bonne.",
+        2: "Vision périphérique moyenne.",
+        1: "Vision périphérique faible.",
+        0: "Évaluation périphérique non renseignée ou invalide."
+    },
+    "Confort_Visuel": {
+        3: "Très bon confort visuel perçu.",
+        2: "Confort visuel acceptable.",
+        1: "Confort visuel faible ou inconfort.",
+        0: "Absence de réponse sur le confort visuel."
+    },
+    "Vitesse_Horizontale": {
+        3: "Excellente vitesse visuelle horizontale.",
+        2: "Vitesse correcte avec marge de progression.",
+        1: "Vitesse visuelle lente ou perturbée.",
+        0: "Mesure horizontale non disponible ou inexploitée."
+    },
+    "Vitesse_Verticale": {
+        3: "Très bonne vitesse visuelle verticale.",
+        2: "Vitesse verticale modérée.",
+        1: "Réduction marquée de la vitesse verticale.",
+        0: "Vitesse verticale non mesurée ou invalide."
+    },
+    "Vision_Faible_Contraste": {
+        3: "Aucune difficulté détectée en faible contraste.",
+        2: "Légère difficulté avec les contrastes faibles.",
+        1: "Difficulté importante à détecter les faibles contrastes.",
+        0: "Aucune donnée exploitable sur la vision en faible contraste."
+    },
+    "Stereopsie": {
+        3: "Excellente perception 3D (stéréopsie).",
+        2: "Perception 3D correcte.",
+        1: "Perception 3D altérée ou lente.",
+        0: "Données aberrantes ou interprétation non fiable."
+    },
+    "GO_NOGO": {
+        3: "Très bon contrôle décisionnel (go/no-go).",
+        2: "Contrôle correct avec vigilance.",
+        1: "Décisions impulsives ou lenteur observée.",
+        0: "Go/No-Go non calculable (valeurs manquantes)."
+    },
+    "GO": {
+        3: "Temps de réaction très rapide.",
+        2: "Temps de réaction correct, mais améliorable.",
+        1: "Temps de réaction lent ou erratique.",
+        0: "Temps de réaction non mesuré."
+    },
+    "NOGO": {
+        3: "Très bon contrôle inhibiteur (très peu d'erreurs).",
+        2: "Contrôle correct avec quelques erreurs.",
+        1: "Impulsivité marquée ou erreurs fréquentes.",
+        0: "Donnée inhibitrice absente ou invalide."
+    }
+}
+
+
 def noter(variable, valeur):
     if variable == "Decision_Visuelle":
         return 3 if valeur == "Rapide" else 2 if valeur == "Moyenne" else 1 if valeur == "Lente" else 0
@@ -93,7 +169,7 @@ def scorer_profil(d):
     coherence = "Très bonne" if ecart < 10 else "Moyenne" if ecart < 25 else "Faible"
     alerte_discordance = ecart >= 25
 
-    _analytique = {
+    radar_analytique = {
         "Vitesse visuelle": round((noter("Vitesse_Horizontale", d.get("Vitesse_Horizontale", 0)) + noter("Vitesse_Verticale", d.get("Vitesse_Verticale", 0))) / 2 * 33.33, 1),
         "Résolution spatiale": round((noter("Vision_Faible_Contraste", d.get("Vision_Faible_Contraste", 0)) + (noter("Stereopsie", d.get("Stereopsie", 0)) if stereopsie_activee else 0)) / (2 if stereopsie_activee else 1) * 33.33, 1),
         "Attention périphérique": round(noter("Vision_Peri", d.get("Vision_Peri", 0)) * 33.33, 1),
@@ -127,19 +203,16 @@ def scorer_profil(d):
 def afficher_radar(valeurs, taille=(4, 4), titre=None):
     labels = list(valeurs.keys())
     donnees = list(valeurs.values())
-    donnees += donnees[:1]  # fermer le cercle
+    donnees += donnees[:1]
     angles = [n / float(len(labels)) * 2 * np.pi for n in range(len(labels))] + [0]
-
     fig, ax = plt.subplots(figsize=taille, subplot_kw=dict(polar=True))
     fig.patch.set_facecolor('#cccaca')
     ax.plot(angles, donnees, linewidth=2, color='#444')
     ax.fill(angles, donnees, color='#8888ff', alpha=0.25)
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(labels)
-
     if titre:
         ax.set_title(titre, fontsize=12, pad=20)
-
     st.pyplot(fig)
 
 def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_colors=None):
