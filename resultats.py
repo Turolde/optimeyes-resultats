@@ -169,19 +169,48 @@ for indicateur in indicateurs_jauge:
     seuils = seuils_reference.get(indicateur, {"min": 0, "max": 100})
     bornes = [seuils.get(f"borne{i}") for i in range(1, 5)]
 
-    if indicateur == "Vision_Faible_Contraste":
-        col = col1 if compteur % 2 == 0 else col2
-        couleur = "#1e5631" if valeur == 0 else "#8b1e3f"
-        message = "Aucune difficulté détectée." if valeur == 0 else "Difficulté à détecter les faibles contrastes."
-        badge = "🟢 Bonne vision faible contraste" if valeur == 0 else "🔴 Échec ou difficulté"
-        with col:
-            st.markdown(
-                f"""<div style='background-color: {couleur}; padding: 16px; border-radius: 10px; text-align: center; color: white;'>
-                <div style='font-size: 1.1em; font-weight: bold;'>{badge}</div>
-                <p>{message}</p></div>""", unsafe_allow_html=True
-            )
+    # Couleurs adaptées
+    great = "#66ccaa"     # vert doux
+    good = "#b5d991"      # vert-jaune doux
+    average = "#ffd580"   # beige doré
+    bad = "#ff9c8a"       # corail
+    worst = "#d66a6a"     # rouge doux
+
+    if indicateur == "Stereopsie":
+        couleurs = [bad, great, average, bad]
+    elif indicateur == "Vitesse_Horizontale":
+        couleurs = [bad, average, great, average, bad]
+    elif indicateur == "Vitesse_Verticale":
+        couleurs = [bad, average, great]
+    elif indicateur == "GO":
+        couleurs = [great, average, bad]
+    elif indicateur == "NOGO":
+        couleurs = [great, bad]
+    elif indicateur == "Vision_Faible_Contraste":
+        if valeur == 0:
+            badge = "🟢 Bonne vision faible contraste"
+            message = "Aucune difficulté détectée en faible contraste."
+            couleur_fond = "#1e5631"
+        else:
+            badge = "🔴 Échec ou difficulté"
+            message = "Difficulté à détecter les faibles contrastes."
+            couleur_fond = "#8b1e3f"
+    
+       col = col1 if compteur_affiches % 2 == 0 else col2
+                with col:
+                    st.markdown(
+                        f"""
+                        <div style='background-color: {couleur_fond}; padding: 16px; border-radius: 10px; text-align: center; color: white;'>
+                            <div style='font-size: 1.1em; font-weight: bold;'>{badge}</div>
+                            <p style='margin-top: 6px; font-size: 0.9em;'>{message}</p>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
         compteur += 1
         continue
+    else:
+                couleurs = None
 
     fig = plot_jauge_multizone(
         nom=indicateur,
