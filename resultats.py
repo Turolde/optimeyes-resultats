@@ -1,14 +1,16 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 from io import BytesIO
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload
+from scorer_optimeyes import scorer_profil, plot_jauge_multizone, afficher_radar
 
-# --- CONFIGURATION ---
 FICHIER_ID_DRIVE = "162CoThxy9GcuJIWLB_jcpGxXBWsUz7UD"
 
-# --- Connexion au Google Drive ---
+# Connexion Google Drive
 def connect_drive():
     creds = service_account.Credentials.from_service_account_info(
         st.secrets["google"],
@@ -16,7 +18,6 @@ def connect_drive():
     )
     return build("drive", "v3", credentials=creds)
 
-# --- Télécharger le fichier Excel depuis Drive ---
 @st.cache_data(ttl=60)
 def telecharger_donnees():
     service = connect_drive()
@@ -29,54 +30,181 @@ def telecharger_donnees():
     buffer.seek(0)
     return pd.read_excel(buffer)
 
-# --- Charger données à partir de l'URL ---
+# --- Charger ligne à partir de l’URL ---
 def charger_profil(url_id):
     df = telecharger_donnees()
     ligne = df[df["Url_ID"] == url_id]
     return ligne
 
-# --- Interface ---
+# --- UI ---
 st.set_page_config(page_title="Passeport Visuel Optimeyes", layout="centered")
 st.image("optimeyes_logo_black.png", width=400)
-
 st.title("🎫 Passeport Visuo-Cognitif")
 
-# --- Récupérer l'ID de l'URL ---
 url_id = st.query_params.get("id")
-
 if not url_id:
-    st.error("❌ Aucun identifiant de profil fourni dans l'URL.")
+    st.error("❌ Aucun identifiant de profil fourni.")
     st.stop()
 
-# --- Charger les données ---
 ligne = charger_profil(url_id)
-
 if ligne.empty:
-    st.error("❌ Profil introuvable. Vérifiez votre lien.")
+    st.error("❌ Profil introuvable.")
     st.stop()
 
-# --- Affichage des données ---
-profil = ligne.iloc[0].get("Profil", "Profil inconnu")
-score_global = ligne.iloc[0].get("Score_Global", "?")
-coherence = ligne.iloc[0].get("Coherence", "?")
+donnees = ligne.iloc[0].to_dict()
+resultat = scorer_profil(donnees)
 
-st.markdown(f"""
-## 👁️ Profil dominant : **{profil}**
+# --- Scores principaux ---
+col1, col2 = st.columns(2)
+with col1:
+    st.markdown(
+        f"""<div style='background-color: #1e3a5f; padding: 20px; border-radius: 12px; text-align: center; color: white;'>
+            <h4>🎯 Score de perception subjective</h4>
+            <div style='font-size: 2.5em; font-weight: bold; color: #66ccff;'>{resultat['indice_subjectif']} %</div>
+        </div>""",
+        unsafe_allow_html=True
+    )
+with col2:
+    st.markdown(
+        f"""<div style='background-color: #442b00; padding: 20px; border-radius: 12px; text-align: center; color: white;'>
+            <h4>🧪 Score de performance clinique</h4>
+            <div style='font-size: 2.5em; font-weight: bold; color: #ffa64d;'>{resultat['indice_performance']} %</div>
+        </div>""",
+        unsafe_allow_html=True
+    )
 
-- 🎯 Score global : **{score_global} %**
-- 🔍 Cohérence subjectif/performance : **{coherence}**
-""")
+# --- Cohérence ---
+couleur_coherence = {
+    "Très bonne": "#66ff99",
+    "Moyenne": "#ffd966",
+    "Faible": "#ff6666"
+}.get(resultat["coherence"], "#cccccc")
 
-# --- Option : Radar ou résumé analytique ---
-try:
-    radar = ligne.iloc[0].get("Radar_Analytique", {})
-    if isinstance(radar, str):
-        radar = eval(radar)
-    if isinstance(radar, dict):
-        st.subheader("🔬 Répartition analytique")
-        st.bar_chart(pd.Series(radar))
-except Exception as e:
-    st.info("Radar non disponible.")
+st.markdown(
+    f"""<div style='margin-top: 20px; padding: 15px; border-radius: 10px; background-color: #2a2a2a; color: white;'>
+        <p>🔍 <strong>Cohérence entre perception et performance :</strong>
+        <span style='color: {couleur_coherence}; font-weight: bold;'> {resultat["coherence"]}</span></p>
+    </div>""",
+    unsafe_allow_html=True
+)
 
+if resultat["alerte_discordance"]:
+    st.markdown(
+        """<div style='margin-top: 10px; padding: 12px; border-radius: 8px; background-color: #5c0000; color: #ffe6e6;'>
+        ⚠️ Attention : écart élevé entre perception et performance.
+        </div>""",
+        unsafe_allow_html=True
+    )
+
+# --- Profil dominant ---
+st.subheader("🎯 Résultat du Profiling")
+col_g, col_d = st.columns([6, 4])
+with col_g:
+    st.markdown("### 🔄 Score par profil")
+    afficher_radar(resultat["scores"])
+with col_d:
+    for profil, score in resultat["scores"].items():
+        couleur = {
+            "Athlète": "#90CBC1", "Pilote": "#A5B4DC",
+            "E-sportif": "#D8A5B8", "Performer cognitif": "#B6A49C"
+        }.get(profil, "#ccc")
+        emoji = {
+            "Athlète": "🏃‍♂️", "Pilote": "🏎️",
+            "E-sportif": "🎮", "Performer cognitif": "🧠"
+        }.get(profil, "👁️")
+        st.markdown(
+            f"""<div style='background-color:{couleur};padding:8px 12px;margin-bottom:8px;
+            border-radius:8px;font-weight:600;color:#1f1f1f;'>
+            {emoji} {profil} : <span style='float:right;'>{score} %</span>
+            </div>""", unsafe_allow_html=True
+        )
+
+# --- Radar analytique ---
 st.markdown("---")
-st.info("Ce résultat est issu de l'expérience Optimeyes VivaTech 2025.")
+st.subheader("🔬 Analyse des 5 axes cognitifs et visuels")
+col_g, col_d = st.columns([6, 4])
+with col_g:
+    afficher_radar(resultat["radar_analytique"])
+with col_d:
+    for axe, score in resultat["radar_analytique"].items():
+        st.markdown(
+            f"""<div style='background-color:#e0e0e0;padding:8px 12px;margin-bottom:8px;
+            border-radius:8px;font-weight:600;color:#1f1f1f;'>
+            {axe} : <span style='float:right;'>{score} %</span>
+            </div>""", unsafe_allow_html=True
+        )
+
+# --- Jauges de performance ---
+st.markdown("---")
+st.subheader("📏 Jauges de performance")
+
+indicateurs_jauge = [
+    "Vitesse_Horizontale", "Vitesse_Verticale", "GO", "NOGO",
+    "Vision_Faible_Contraste", "Stereopsie"
+]
+
+df_config = pd.read_csv("Vivatech_Optimeyes.csv", sep=";", encoding="latin1")
+seuils_reference = {
+    row["Item"]: {
+        "min": float(row["Min"]),
+        "max": float(row["Max"]),
+        "borne1": row["Borne1"],
+        "borne2": row["Borne2"],
+        "borne3": row["Borne3"],
+        "borne4": row["Borne4"]
+    }
+    for _, row in df_config.iterrows()
+    if row["Item"] in indicateurs_jauge and str(row["Min"]).strip() and str(row["Max"]).strip()
+}
+
+col1, col2 = st.columns(2)
+compteur = 0
+for indicateur in indicateurs_jauge:
+    if indicateur == "Stereopsie" and not donnees.get("Stereopsie_activee", True):
+        continue
+
+    valeur = donnees.get(indicateur)
+    if pd.isnull(valeur): continue
+    seuils = seuils_reference.get(indicateur, {"min": 0, "max": 100})
+    bornes = [seuils.get(f"borne{i}") for i in range(1, 5)]
+
+    if indicateur == "Vision_Faible_Contraste":
+        col = col1 if compteur % 2 == 0 else col2
+        couleur = "#1e5631" if valeur == 0 else "#8b1e3f"
+        message = "Aucune difficulté détectée." if valeur == 0 else "Difficulté à détecter les faibles contrastes."
+        badge = "🟢 Bonne vision faible contraste" if valeur == 0 else "🔴 Échec ou difficulté"
+        with col:
+            st.markdown(
+                f"""<div style='background-color: {couleur}; padding: 16px; border-radius: 10px; text-align: center; color: white;'>
+                <div style='font-size: 1.1em; font-weight: bold;'>{badge}</div>
+                <p>{message}</p></div>""", unsafe_allow_html=True
+            )
+        compteur += 1
+        continue
+
+    fig = plot_jauge_multizone(
+        nom=indicateur,
+        valeur=valeur,
+        min_val=seuils["min"],
+        max_val=seuils["max"],
+        bornes_abs=bornes
+    )
+    col = col1 if compteur % 2 == 0 else col2
+    with col:
+        st.pyplot(fig)
+        commentaire = resultat["commentaires"].get(indicateur, "")
+        if commentaire:
+            st.markdown(f"<span style='font-size: 0.9em; color: grey;'>{commentaire}</span>", unsafe_allow_html=True)
+    compteur += 1
+
+# --- Données saisies ---
+st.markdown("---")
+st.subheader("🗒️ Données saisies")
+donnees_claires = {
+    k: v for k, v in donnees.items()
+    if isinstance(v, (str, int, float, bool)) and not isinstance(v, list)
+}
+df_resume = pd.DataFrame.from_dict(donnees_claires, orient="index", columns=["Valeur"])
+df_resume.reset_index(inplace=True)
+df_resume.columns = ["Champ", "Valeur"]
+st.dataframe(df_resume, use_container_width=True)
