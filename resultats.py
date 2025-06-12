@@ -195,22 +195,23 @@ for indicateur in indicateurs_jauge:
             badge = "🔴 Échec ou difficulté"
             message = "Difficulté à détecter les faibles contrastes."
             couleur_fond = "#8b1e3f"
-    
-    col = col1 if compteur_affiches % 2 == 0 else col2
-    with col:
-        st.markdown(
-            f"""
-            <div style='background-color: {couleur_fond}; padding: 16px; border-radius: 10px; text-align: center; color: white;'>
-                <div style='font-size: 1.1em; font-weight: bold;'>{badge}</div>
-                <p style='margin-top: 6px; font-size: 0.9em;'>{message}</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        compteur += 1
+
+        col = col1 if compteur_affiches % 2 == 0 else col2
+        with col:
+            st.markdown(
+                f"""
+                <div style='background-color: {couleur_fond}; padding: 16px; border-radius: 10px; text-align: center; color: white;'>
+                    <div style='font-size: 1.1em; font-weight: bold;'>{badge}</div>
+                    <p style='margin-top: 6px; font-size: 0.9em;'>{message}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        compteur_affiches += 1
         continue
     else:
         couleurs = None
+    
 
     fig = plot_jauge_multizone(
         nom=indicateur,
