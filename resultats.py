@@ -37,6 +37,7 @@ def charger_profil(url_id):
     return ligne
 
 # --- UI ---
+st.set_page_config(page_title="Passeport Visuel Optimeyes", layout="centered")
 
 url_id = st.query_params.get("id")
 if not url_id:
@@ -48,7 +49,6 @@ if ligne.empty:
     st.error("❌ Profil introuvable.")
     st.stop()
     
-st.set_page_config(page_title="Passeport Visuel Optimeyes", layout="centered")
 st.image("optimeyes_logo_black.png", width=400)
 donnees = ligne.iloc[0].to_dict()
 code_sujet = donnees.get("Code_Sujet", url_id[:8])
