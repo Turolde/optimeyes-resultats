@@ -59,7 +59,8 @@ resultat = scorer_profil(donnees)
 col1, col2 = st.columns(2)
 with col1:
     st.markdown(
-        f"""<div style='background-color: #1e3a5f; padding: 20px; border-radius: 12px; text-align: center; color: white;'>
+        f"""<div style='background-color: #1e3a5f; padding: 20px; border-radius: 12px; 
+                     text-align: center; color: white; margin-bottom: 20px;'>
             <h4>🎯 Score de perception subjective</h4>
             <div style='font-size: 2.5em; font-weight: bold; color: #66ccff;'>{resultat['indice_subjectif']} %</div>
         </div>""",
