@@ -150,8 +150,6 @@ mapping_indicateurs = {
     "stereopsie": "Stereopsie"
 }
 
-palette = ["#2A9D8F", "#6DBCC5", "#E9C46A", "#F4A261", "#EE8959"]  # good → critical
-
 df_config = pd.read_csv("Vivatech_Optimeyes.csv", sep=";", encoding="latin1")
 
 # Préparer les seuils
@@ -182,26 +180,33 @@ for cle_logique, nom_indicateur in mapping_indicateurs.items():
     seuils = seuils_reference.get(nom_indicateur, {"min": 0, "max": 100})
     bornes = [seuils.get(f"borne{i}") for i in range(1, 5)]
 
-    # Couleurs spécifiques par indicateur
-    if nom_indicateur == "Stereopsie":
-        couleurs = [palette[3], palette[0], palette[2], palette[3]]
-    elif nom_indicateur == "Vitesse_Horizontale":
-        couleurs = palette
-    elif nom_indicateur == "Vitesse_Verticale":
-        couleurs = palette[:3]
-    elif nom_indicateur == "GO":
-        couleurs = [palette[0], palette[2], palette[4]]
-    elif nom_indicateur == "NOGO":
-        couleurs = [palette[0], palette[4]]
-    elif nom_indicateur == "Vision_Faible_Contraste":
-        if valeur == 0:
-            badge = "🟢 Bonne vision faible contraste"
-            message = "Aucune difficulté détectée en faible contraste."
-            couleur_fond = palette[0]
-        else:
-            badge = "🔴 Échec ou difficulté"
-            message = "Difficulté à détecter les faibles contrastes."
-            couleur_fond = palette[-1]
+    # Couleurs adaptées
+        great = "#66ccaa"     # vert doux
+        good = "#b5d991"      # vert-jaune doux
+        average = "#ffd580"   # beige doré
+        bad = "#ff9c8a"       # corail
+        worst = "#d66a6a"     # rouge doux
+    
+        if indicateur == "Stereopsie":
+            couleurs = [bad, great, average, bad]
+        elif indicateur == "Vitesse_Horizontale":
+            couleurs = [bad, average, great, average, bad]
+        elif indicateur == "Vitesse_Verticale":
+            couleurs = [bad, average, great]
+        elif indicateur == "GO":
+            couleurs = [great, average, bad]
+        elif indicateur == "NOGO":
+            couleurs = [great, bad]
+        elif indicateur == "Vision_Faible_Contraste":
+            if valeur == 0:
+                badge = "🟢 Bonne vision faible contraste"
+                message = "Aucune difficulté détectée en faible contraste."
+                couleur_fond = "#1e5631"
+            else:
+                badge = "🔴 Échec ou difficulté"
+                message = "Difficulté à détecter les faibles contrastes."
+                couleur_fond = "#8b1e3f"
+            
         col = col1 if compteur % 2 == 0 else col2
         with col:
             st.markdown(
