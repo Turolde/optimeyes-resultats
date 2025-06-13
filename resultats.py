@@ -169,15 +169,15 @@ seuils_reference = {
 col1, col2 = st.columns(2)
 compteur = 0
 
-for cle_logique, indicateur in mapping_indicateurs.items():
-    if indicateur == "Stereopsie" and not donnees.get("Stereopsie_activee", True):
+for cle_logique, nom_indicateur in mapping_indicateurs.items():
+    if nom_indicateur == "Stereopsie" and not donnees.get("Stereopsie_activee", True):
         continue
 
-    valeur = donnees.get(indicateur)
+    valeur = donnees.get(nom_indicateur)
     if pd.isnull(valeur):
         continue
 
-    seuils = seuils_reference.get(indicateur, {"min": 0, "max": 100})
+    seuils = seuils_reference.get(nom_indicateur, {"min": 0, "max": 100})
     bornes = [seuils.get(f"borne{i}") for i in range(1, 5)]
 
 # Couleurs adaptées
@@ -187,17 +187,17 @@ for cle_logique, indicateur in mapping_indicateurs.items():
     bad = "#ff9c8a"       # corail
     worst = "#d66a6a"     # rouge doux
 
-    if indicateur == "Stereopsie":
+    if nom_indicateur == "Stereopsie":
         couleurs = [bad, great, average, bad]
-    elif indicateur == "Vitesse_Horizontale":
+    elif nom_indicateur == "Vitesse_Horizontale":
         couleurs = [bad, average, great, average, bad]
-    elif indicateur == "Vitesse_Verticale":
+    elif nom_indicateur == "Vitesse_Verticale":
         couleurs = [bad, average, great]
-    elif indicateur == "GO":
+    elif nom_indicateur == "GO":
         couleurs = [great, average, bad]
-    elif indicateur == "NOGO":
+    elif nom_indicateur == "NOGO":
         couleurs = [great, bad]
-    elif indicateur == "Vision_Faible_Contraste":
+    elif nom_indicateur == "Vision_Faible_Contraste":
         if valeur == 0:
             badge = "🟢 Bonne vision faible contraste"
             message = "Aucune difficulté détectée en faible contraste."
@@ -224,7 +224,7 @@ for cle_logique, indicateur in mapping_indicateurs.items():
         couleurs = None
 
     fig = plot_jauge_multizone(
-        nom=indicateur,
+        nom=nom_indicateur,
         valeur=valeur,
         min_val=seuils["min"],
         max_val=seuils["max"],
@@ -236,7 +236,7 @@ for cle_logique, indicateur in mapping_indicateurs.items():
         st.pyplot(fig)
 
         # VRAI commentaire associé
-        commentaire = resultat["commentaires"].get(indicateur, "")
+        commentaire = resultat["commentaires"].get(nom_indicateur, "")
         if commentaire and isinstance(commentaire, str) and not commentaire.lower().startswith("score"):
             st.markdown(f"<span style='font-size: 0.9em; color: grey;'>{commentaire}</span>", unsafe_allow_html=True)
 
