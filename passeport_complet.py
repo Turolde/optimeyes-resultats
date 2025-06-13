@@ -37,7 +37,7 @@ def charger_profil(url_id):
     return ligne
 
 # --- UI ---
-st.set_page_config(page_title="Passeport Visuel Optimeyes", layout="centered")
+# st.set_page_config(page_title="Passeport Visuel Optimeyes", layout="centered")
 
 url_id = st.query_params.get("id")
 if not url_id:
