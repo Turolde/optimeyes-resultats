@@ -249,40 +249,45 @@ for indicateur in donnees_individu:
 
 st.markdown("---")
 
-with st.expander("🧠 Voir les résultats subjectifs (auto-évaluation)"):
-    st.markdown("### 🧭 Analyse des données subjectives")
+# --- Résumé Subjectif Visuel ---
+st.markdown("---")
+st.markdown("## 🧠 Résumé de l'auto-évaluation (perception subjective)")
 
-    variables_subjectives = [
-        "Decision_Visuelle", "Fatigue_Visuelle", "Sensibilite_Lumineuse",
-        "Vision_Peri", "Confort_Visuel"
-    ]
+# 🎯 Carte score global subjectif
+st.markdown(f"""
+<div style='background-color: #1e3a5f; padding: 20px; border-radius: 12px; text-align: center; color: white; margin-bottom: 20px;'>
+    <h4>🎯 Score global de perception (subjectif)</h4>
+    <div style='font-size: 2.8em; font-weight: bold; color: #66ccff;'>{resultat['indice_subjectif']} %</div>
+</div>
+""", unsafe_allow_html=True)
 
-    scores_subjectifs = {
-        var: donnees.get(var)
-        for var in variables_subjectives
-        if var in donnees and pd.notnull(donnees[var])
-    }
+# Variables subjectives (saisie de l'utilisateur)
+variables_subjectives = [
+    "Decision_Visuelle", "Fatigue_Visuelle", "Sensibilite_Lumineuse",
+    "Vision_Peri", "Confort_Visuel"
+]
 
-    col1, col2 = st.columns(2)
-    for i, (var, note) in enumerate(scores_subjectifs.items()):
-        commentaire = commentaires_indicateurs.get(var, {}).get(int(note), "")
-        col = col1 if i % 2 == 0 else col2
-        with col:
-            st.markdown(
-                f"""
-                <div style='background-color:#f9f9f9; padding: 12px; border-radius: 10px; margin-bottom: 12px;'>
-                    <strong>{var.replace('_', ' ')} :</strong><br>
-                    <span style='font-size: 1.3em;'>Score {int(note)}/3</span><br>
-                    <span style='font-size: 0.9em; color: grey;'>{commentaire}</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+scores_subjectifs = {
+    var: donnees.get(var)
+    for var in variables_subjectives
+    if var in donnees and pd.notnull(donnees[var])
+}
 
-    # Score global subjectif
-    st.markdown(f"""
-    <div style='text-align:center; margin-top: 20px;'>
-        <h4>🎯 Score global de perception : {resultat['indice_subjectif']} %</h4>
-    </div>
-    """, unsafe_allow_html=True)
+# 📊 Radar + 📋 Valeurs en colonnes
+col_g, col_d = st.columns([6, 4])
+
+with col_g:
+    st.markdown("### 📊 Radar subjectif")
+    afficher_radar(resultat.get("scores_subjectifs", {}))
+
+with col_d:
+    st.markdown("### 📋 Valeurs saisies")
+    for var, note in scores_subjectifs.items():
+        label = var.replace("_", " ")
+        st.markdown(f"""
+            <div style='background-color: #eaeaea; padding: 10px 14px; border-radius: 8px;
+                        margin-bottom: 10px; font-weight: bold; color: #333;'>
+                {label} : <span style='float:right;'>🧭 {int(note)}/3</span>
+            </div>
+        """, unsafe_allow_html=True)
 
