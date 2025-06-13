@@ -103,4 +103,5 @@ if subjectif_seul:
 
 # Cas 2 : passeport complet
 else:
-    exec(open("passeport_complet.py").read())
+ #   exec(open("passeport_complet.py").read())
+    st.write("Subjectif = NON")
