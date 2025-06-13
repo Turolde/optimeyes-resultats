@@ -7,7 +7,7 @@ def afficher_passeport_complet(donnees, resultat):
     from googleapiclient.discovery import build
     from google.oauth2 import service_account
     from googleapiclient.http import MediaIoBaseDownload
-    from scorer_optimeyes import scorer_profil, plot_jauge_multizone, afficher_radar, noter
+    from scorer_optimeyes import scorer_profil, plot_jauge_multizone, afficher_radar, noter, afficher_footer_optimeyes
     
     FICHIER_ID_DRIVE = "162CoThxy9GcuJIWLB_jcpGxXBWsUz7UD"
     
