@@ -141,14 +141,22 @@ with col_d:
 st.markdown("---")
 st.subheader("📏 Jauges de performance")
 
-indicateurs_jauge = [
-    "Vitesse_Horizontale", "Vitesse_Verticale", "GO", "NOGO",
-    "Vision_Faible_Contraste", "Stereopsie"
-]
+mapping_indicateurs = {
+    "vitesse_horizontale": "Vitesse_Horizontale",
+    "vitesse_verticale": "Vitesse_Verticale",
+    "go": "GO",
+    "nogo": "NOGO",
+    "vision_faible_contraste": "Vision_Faible_Contraste",
+    "stereopsie": "Stereopsie"
+}
+
+palette = ["#2A9D8F", "#6DBCC5", "#E9C46A", "#F4A261", "#EE8959"]  # good → critical
 
 df_config = pd.read_csv("Vivatech_Optimeyes.csv", sep=";", encoding="latin1")
+
+# Préparer les seuils
 seuils_reference = {
-    row["Item"]: {
+    row["Item"].strip(): {
         "min": float(row["Min"]),
         "max": float(row["Max"]),
         "borne1": row["Borne1"],
@@ -157,49 +165,45 @@ seuils_reference = {
         "borne4": row["Borne4"]
     }
     for _, row in df_config.iterrows()
-    if row["Item"] in indicateurs_jauge and str(row["Min"]).strip() and str(row["Max"]).strip()
+    if row["Item"].strip() in mapping_indicateurs.values()
 }
 
 col1, col2 = st.columns(2)
 compteur = 0
-for indicateur in indicateurs_jauge:
-    if indicateur == "Stereopsie" and not donnees.get("Stereopsie_activee", True):
+
+for cle_logique, nom_indicateur in mapping_indicateurs.items():
+    if nom_indicateur == "Stereopsie" and not donnees.get("Stereopsie_activee", True):
         continue
 
-    valeur = donnees.get(indicateur)
-    if pd.isnull(valeur): continue
-    seuils = seuils_reference.get(indicateur, {"min": 0, "max": 100})
+    valeur = donnees.get(nom_indicateur)
+    if pd.isnull(valeur):
+        continue
+
+    seuils = seuils_reference.get(nom_indicateur, {"min": 0, "max": 100})
     bornes = [seuils.get(f"borne{i}") for i in range(1, 5)]
 
-    # Couleurs adaptées
-    great = "#2A9D8F"     # vert doux
-    good = "#6DBCC5"      # vert-jaune doux
-    average = "#E9C46A"   # beige doré
-    bad = "#F4A261"       # corail
-    worst = "#EE8959"     # rouge doux
-
-    if indicateur == "Stereopsie":
-        couleurs = [bad, great, average, bad]
-    elif indicateur == "Vitesse_Horizontale":
-        couleurs = [bad, average, great, average, bad]
-    elif indicateur == "Vitesse_Verticale":
-        couleurs = [bad, average, great]
-    elif indicateur == "GO":
-        couleurs = [great, average, bad]
-    elif indicateur == "NOGO":
-        couleurs = [great, bad]
-    elif indicateur == "Vision_Faible_Contraste":
+    # Couleurs spécifiques par indicateur
+    if nom_indicateur == "Stereopsie":
+        couleurs = [palette[3], palette[0], palette[2], palette[3]]
+    elif nom_indicateur == "Vitesse_Horizontale":
+        couleurs = palette
+    elif nom_indicateur == "Vitesse_Verticale":
+        couleurs = palette[:3]
+    elif nom_indicateur == "GO":
+        couleurs = [palette[0], palette[2], palette[4]]
+    elif nom_indicateur == "NOGO":
+        couleurs = [palette[0], palette[4]]
+    elif nom_indicateur == "Vision_Faible_Contraste":
         if valeur == 0:
             badge = "🟢 Bonne vision faible contraste"
             message = "Aucune difficulté détectée en faible contraste."
-            couleur_fond = "#2A9D8F"  # Persian Green
+            couleur_fond = palette[0]
         else:
             badge = "🔴 Échec ou difficulté"
             message = "Difficulté à détecter les faibles contrastes."
-            couleur_fond = "#EE8959"  # Mandarin
-
-        col = col1 if compteur % 2 == 0 else col2  # CORRECTEMENT indenté ici
-        with col:  # ✅ corrigé
+            couleur_fond = palette[-1]
+        col = col1 if compteur % 2 == 0 else col2
+        with col:
             st.markdown(
                 f"""
                 <div style='background-color: {couleur_fond}; padding: 16px; border-radius: 10px; text-align: center; color: white;'>
@@ -213,21 +217,24 @@ for indicateur in indicateurs_jauge:
         continue
     else:
         couleurs = None
-    
 
     fig = plot_jauge_multizone(
-        nom=indicateur,
+        nom=nom_indicateur,
         valeur=valeur,
         min_val=seuils["min"],
         max_val=seuils["max"],
-        bornes_abs=bornes
+        bornes_abs=bornes,
+        couleurs=couleurs
     )
     col = col1 if compteur % 2 == 0 else col2
     with col:
         st.pyplot(fig)
-        commentaire = resultat["commentaires"].get(indicateur, "")
-        if commentaire:
+
+        # VRAI commentaire associé
+        commentaire = resultat["commentaires"].get(nom_indicateur, "")
+        if commentaire and isinstance(commentaire, str) and not commentaire.lower().startswith("score"):
             st.markdown(f"<span style='font-size: 0.9em; color: grey;'>{commentaire}</span>", unsafe_allow_html=True)
+
     compteur += 1
 
 # --- Données saisies ---
