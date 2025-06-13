@@ -107,7 +107,12 @@ if subjectif_seul:
                         {label} : <span style='float:right;'>📝 {val}</span>
                     </div>
                 """, unsafe_allow_html=True)
-    st.markdown("""
+
+# Cas 2 : passeport complet
+else:
+    afficher_passeport_complet(donnees, resultat)
+
+st.markdown("""
     <hr style="margin-top: 2em; margin-bottom: 1em; border: none; height: 2px;
     background: linear-gradient(to right, #ff6f91, #ff9671, #ffc75f, #d65db1);">
 
@@ -120,8 +125,3 @@ if subjectif_seul:
     style="color: #d65db1; font-weight: bold;">Visitez optimeyes.fr</a>
     </div>
     """, unsafe_allow_html=True)
-
-
-# Cas 2 : passeport complet
-else:
-    afficher_passeport_complet(donnees, resultat)
