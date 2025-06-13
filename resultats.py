@@ -140,6 +140,7 @@ with col_d:
 # --- Jauges de performance ---
 st.markdown("---")
 st.subheader("📏 Jauges de performance")
+st.write("🔍 Commentaires :", resultat.get("commentaires", {}))
 
 indicateurs_jauge = [
     "Vitesse_Horizontale",
