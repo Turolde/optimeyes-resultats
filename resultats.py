@@ -51,6 +51,7 @@ if ligne.empty:
     st.stop()
 
 donnees = ligne.iloc[0].to_dict()
+st.write("📎 Valeur brute Subjectif_Seul :", donnees.get("Subjectif_Seul"))
 resultat = scorer_profil(donnees)
 valeur_brute = str(donnees.get("Subjectif_Seul", "")).strip().lower()
 subjectif_seul = valeur_brute in ["true", "1", "oui", "yes"]
