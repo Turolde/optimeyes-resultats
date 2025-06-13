@@ -247,6 +247,42 @@ for indicateur in donnees_individu:
             st.markdown(f"<span style='font-size: 0.9em; color: grey;'>{commentaire}</span>", unsafe_allow_html=True)
     compteur += 1
 
-
-# --- Données saisies ---
 st.markdown("---")
+
+with st.expander("🧠 Voir les résultats subjectifs (auto-évaluation)"):
+    st.markdown("### 🧭 Analyse des données subjectives")
+
+    variables_subjectives = [
+        "Decision_Visuelle", "Fatigue_Visuelle", "Sensibilite_Lumineuse",
+        "Vision_Peri", "Confort_Visuel"
+    ]
+
+    scores_subjectifs = {
+        var: donnees.get(var)
+        for var in variables_subjectives
+        if var in donnees and pd.notnull(donnees[var])
+    }
+
+    col1, col2 = st.columns(2)
+    for i, (var, note) in enumerate(scores_subjectifs.items()):
+        commentaire = commentaires_indicateurs.get(var, {}).get(int(note), "")
+        col = col1 if i % 2 == 0 else col2
+        with col:
+            st.markdown(
+                f"""
+                <div style='background-color:#f9f9f9; padding: 12px; border-radius: 10px; margin-bottom: 12px;'>
+                    <strong>{var.replace('_', ' ')} :</strong><br>
+                    <span style='font-size: 1.3em;'>Score {int(note)}/3</span><br>
+                    <span style='font-size: 0.9em; color: grey;'>{commentaire}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    # Score global subjectif
+    st.markdown(f"""
+    <div style='text-align:center; margin-top: 20px;'>
+        <h4>🎯 Score global de perception : {resultat['indice_subjectif']} %</h4>
+    </div>
+    """, unsafe_allow_html=True)
+
