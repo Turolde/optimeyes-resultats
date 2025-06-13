@@ -54,12 +54,12 @@ resultat = scorer_profil(donnees)
 valeur_brute = str(donnees.get("Subjectif_Seul", "")).strip().lower()
 subjectif_seul = valeur_brute in ["true", "1", "oui", "yes"]
 
-st.image("optimeyes_logo_black.png", width=400)
 code_sujet = donnees.get("Code_Sujet", url_id[:8])
-st.title(f"🎫 Passeport Visuo-Cognitif de {code_sujet}")
 
 # Cas 1 : affichage subjectif seul
 if subjectif_seul:
+    st.image("optimeyes_logo_black.png", width=400)
+    st.title(f"🎫 Passeport Visuo-Cognitif de {code_sujet}")
     st.markdown("""<div style='background-color: #1e3a5f; padding: 20px; border-radius: 12px; text-align: center; color: white; margin-bottom: 20px;'>
         <h4>🎯 Score global de perception (subjectif)</h4>
         <div style='font-size: 2.8em; font-weight: bold; color: #66ccff;'>""" + str(resultat["indice_subjectif"]) + " %</div></div>", unsafe_allow_html=True)
