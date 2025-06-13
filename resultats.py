@@ -53,7 +53,6 @@ if ligne.empty:
 donnees = ligne.iloc[0].to_dict()
 resultat = scorer_profil(donnees)
 valeur_brute = donnees.get("Subjectif_Seul", None)
-st.write(f"Valeur brute Subjectif_Seul : {valeur_brute} ({type(valeur_brute)})")
 
 subjectif_seul = False
 if isinstance(valeur_brute, (int, float)):
