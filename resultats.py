@@ -149,6 +149,7 @@ indicateurs_jauge = [
     "Vision_Faible_Contraste",
     "Stereopsie"
 ]
+df_config = pd.read_csv("Vivatech_Optimeyes.csv", sep=";", encoding="latin1")
 
 # Préparer les valeurs (comme dans le code original)
 donnees_individu = {
