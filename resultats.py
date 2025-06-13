@@ -51,7 +51,8 @@ if ligne.empty:
 
 donnees = ligne.iloc[0].to_dict()
 resultat = scorer_profil(donnees)
-subjectif_seul = donnees.get("Subjectif_Seul", False) in [True, "Oui", "yes", "1", 1]
+valeur_brute = str(donnees.get("Subjectif_Seul", "")).strip().lower()
+subjectif_seul = valeur_brute in ["true", "1", "oui", "yes"]
 
 st.image("optimeyes_logo_black.png", width=400)
 code_sujet = donnees.get("Code_Sujet", url_id[:8])
