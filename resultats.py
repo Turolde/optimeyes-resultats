@@ -232,12 +232,3 @@ for indicateur in indicateurs_jauge:
 
 # --- Données saisies ---
 st.markdown("---")
-st.subheader("🗒️ Données saisies")
-donnees_claires = {
-    k: v for k, v in donnees.items()
-    if isinstance(v, (str, int, float, bool)) and not isinstance(v, list)
-}
-df_resume = pd.DataFrame.from_dict(donnees_claires, orient="index", columns=["Valeur"])
-df_resume.reset_index(inplace=True)
-df_resume.columns = ["Champ", "Valeur"]
-st.dataframe(df_resume, use_container_width=True)
