@@ -114,10 +114,10 @@ if subjectif_seul:
     <div style="background-color: #ffe4ec; padding: 16px; border-radius: 12px;
     text-align: center; font-size: 0.9em; color: #802f4e;">
 
-    👩‍⚕️ <strong>Brigitte EKPE LORDONNOIS</strong> · Fondatrice d'Optimeyes<br>
+    👩‍⚕️ <strong>Brigitte EKPE LORDONNOIS</strong> · Fondatrice<br>
     💡 Chez <strong>Optimeyes</strong>, nous proposons des solutions innovantes pour optimiser votre vision et vos capacités cognitives grâce à des bilans spécialisés, des entraînements ciblés et des technologies de pointe.<br>
     🔗 <a href="https://optimeyes.fr" target="_blank"
-        style="color: #d65db1; font-weight: bold;">www.optimeyes.fr</a>
+        style="color: #d65db1; font-weight: bold;">Visitez optimeyes.fr</a>
     </div>
     """, unsafe_allow_html=True)
 
