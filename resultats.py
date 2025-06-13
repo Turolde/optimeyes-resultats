@@ -250,7 +250,6 @@ for indicateur in donnees_individu:
 st.markdown("---")
 
 # --- Résumé Subjectif Visuel ---
-st.markdown("---")
 st.markdown("## 🧠 Résumé de l'auto-évaluation (perception subjective)")
 
 # 🎯 Carte score global subjectif
@@ -261,33 +260,53 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Variables subjectives (saisie de l'utilisateur)
+# Variables subjectives (valeurs directement issues du XLSX)
 variables_subjectives = [
     "Decision_Visuelle", "Fatigue_Visuelle", "Sensibilite_Lumineuse",
     "Vision_Peri", "Confort_Visuel"
 ]
 
-scores_subjectifs = {
+labels_readables = {
+    "Decision_Visuelle": "Décision",
+    "Fatigue_Visuelle": "Fatigue",
+    "Sensibilite_Lumineuse": "Sensibilité",
+    "Vision_Peri": "Vision périphérique",
+    "Confort_Visuel": "Confort"
+}
+
+# Construction des deux versions : brute + radar-friendly
+scores_subjectifs_raw = {
     var: donnees.get(var)
     for var in variables_subjectives
     if var in donnees and pd.notnull(donnees[var])
 }
 
-# 📊 Radar + 📋 Valeurs en colonnes
+scores_subjectifs_radar = {
+    labels_readables[var]: int(val)
+    for var, val in scores_subjectifs_raw.items()
+    if var in labels_readables and pd.notnull(val)
+}
+
+# 📊 Radar + 📋 Valeurs
 col_g, col_d = st.columns([6, 4])
 
 with col_g:
     st.markdown("### 📊 Radar subjectif")
-    afficher_radar(resultat.get("scores_subjectifs", {}))
+    if scores_subjectifs_radar:
+        afficher_radar(scores_subjectifs_radar)
+    else:
+        st.info("Aucune donnée subjective à afficher dans le radar.")
 
 with col_d:
     st.markdown("### 📋 Valeurs saisies")
-    for var, note in scores_subjectifs.items():
-        label = var.replace("_", " ")
-        st.markdown(f"""
-            <div style='background-color: #eaeaea; padding: 10px 14px; border-radius: 8px;
-                        margin-bottom: 10px; font-weight: bold; color: #333;'>
-                {label} : <span style='float:right;'>🧭 {int(note)}/3</span>
-            </div>
-        """, unsafe_allow_html=True)
+    for var in variables_subjectives:
+        val = scores_subjectifs_raw.get(var)
+        if pd.notnull(val):
+            label = labels_readables.get(var, var.replace("_", " "))
+            st.markdown(f"""
+                <div style='background-color: #eaeaea; padding: 10px 14px; border-radius: 8px;
+                            margin-bottom: 10px; font-weight: bold; color: #333;'>
+                    {label} : <span style='float:right;'>🧭 {int(val)}/3</span>
+                </div>
+            """, unsafe_allow_html=True)
 
