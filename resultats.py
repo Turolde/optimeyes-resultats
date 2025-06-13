@@ -201,11 +201,11 @@ for cle_logique, nom_indicateur in mapping_indicateurs.items():
         if valeur == 0:
             badge = "🟢 Bonne vision faible contraste"
             message = "Aucune difficulté détectée en faible contraste."
-            couleur_fond = "#1e5631"
+            couleur_fond = "#2A9D8F"
         else:
             badge = "🔴 Échec ou difficulté"
             message = "Difficulté à détecter les faibles contrastes."
-            couleur_fond = "#8b1e3f"
+            couleur_fond = "#EE8959"
             
         col = col1 if compteur % 2 == 0 else col2
         with col:
