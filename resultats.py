@@ -51,10 +51,16 @@ if ligne.empty:
     st.stop()
 
 donnees = ligne.iloc[0].to_dict()
-st.write("📎 Valeur brute Subjectif_Seul :", donnees.get("Subjectif_Seul"))
 resultat = scorer_profil(donnees)
-valeur_brute = str(donnees.get("Subjectif_Seul", "")).strip().lower()
-subjectif_seul = valeur_brute in ["true", "1", "oui", "yes"]
+valeur_brute = donnees.get("Subjectif_Seul", None)
+st.write(f"Valeur brute Subjectif_Seul : {valeur_brute} ({type(valeur_brute)})")
+
+subjectif_seul = False
+if isinstance(valeur_brute, (int, float)):
+    subjectif_seul = valeur_brute == 1
+elif isinstance(valeur_brute, str):
+    subjectif_seul = valeur_brute.strip().lower() in ["true", "1", "oui", "yes", "vrai"]
+
 
 code_sujet = donnees.get("Code_Sujet", url_id[:8])
 
