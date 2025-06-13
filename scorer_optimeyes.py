@@ -182,10 +182,10 @@ def scorer_profil(d):
         if var == "Stereopsie" and not stereopsie_activee:
             continue
         score = noter(var, d.get(var, 0))
-        commentaires[var] = f"Score {score}/3"
-    commentaires["GO"] = f"Score {noter('GO', go)}/3"
-    commentaires["NOGO"] = f"Score {noter('NOGO', nogo)}/3"
-    commentaires["GO_NOGO"] = f"Score {go_nogo_score}/3"
+        commentaires[var] = commentaires_indicateurs.get(var, {}).get(score, "Interprétation non disponible.")
+    commentaires["GO_NOGO"] = commentaires_indicateurs.get("GO_NOGO", {}).get(go_nogo_score, "Interprétation non disponible.")
+    commentaires["GO"] = commentaires_indicateurs.get("GO", {}).get(noter("GO", go), "Interprétation non disponible.")
+    commentaires["NOGO"] = commentaires_indicateurs.get("NOGO", {}).get(noter("NOGO", nogo), "Interprétation non disponible.")
 
     return {
         "profil": profil_dominant,
