@@ -189,17 +189,17 @@ for indicateur in indicateurs_jauge:
     elif indicateur == "NOGO":
         couleurs = [great, bad]
     elif indicateur == "Vision_Faible_Contraste":
-       if valeur == 0:
+        if valeur == 0:
             badge = "🟢 Bonne vision faible contraste"
             message = "Aucune difficulté détectée en faible contraste."
             couleur_fond = "#2A9D8F"  # Persian Green
-       else:
+        else:
             badge = "🔴 Échec ou difficulté"
             message = "Difficulté à détecter les faibles contrastes."
             couleur_fond = "#EE8959"  # Mandarin
 
-    col = col1 if compteur % 2 == 0 else col2
-        with col:
+        col = col1 if compteur % 2 == 0 else col2  # CORRECTEMENT indenté ici
+        with col:  # ✅ corrigé
             st.markdown(
                 f"""
                 <div style='background-color: {couleur_fond}; padding: 16px; border-radius: 10px; text-align: center; color: white;'>
