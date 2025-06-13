@@ -6,7 +6,7 @@ from io import BytesIO
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload
-from scorer_optimeyes import scorer_profil, plot_jauge_multizone, afficher_radar
+from scorer_optimeyes import scorer_profil, plot_jauge_multizone, afficher_radar, noter
 
 FICHIER_ID_DRIVE = "162CoThxy9GcuJIWLB_jcpGxXBWsUz7UD"
 
@@ -248,65 +248,57 @@ for indicateur in donnees_individu:
     compteur += 1
 
 st.markdown("---")
-
 # --- Résumé Subjectif Visuel ---
-st.markdown("## 🧠 Résumé de l'auto-évaluation (perception subjective)")
+with st.expander("🧠 Voir les résultats subjectifs (auto-évaluation)"):
 
-# 🎯 Carte score global subjectif
-st.markdown(f"""
-<div style='background-color: #1e3a5f; padding: 20px; border-radius: 12px; text-align: center; color: white; margin-bottom: 20px;'>
-    <h4>🎯 Score global de perception (subjectif)</h4>
-    <div style='font-size: 2.8em; font-weight: bold; color: #66ccff;'>{resultat['indice_subjectif']} %</div>
-</div>
-""", unsafe_allow_html=True)
-
-# Variables subjectives (valeurs directement issues du XLSX)
-variables_subjectives = [
-    "Decision_Visuelle", "Fatigue_Visuelle", "Sensibilite_Lumineuse",
-    "Vision_Peri", "Confort_Visuel"
-]
-
-labels_readables = {
-    "Decision_Visuelle": "Décision",
-    "Fatigue_Visuelle": "Fatigue",
-    "Sensibilite_Lumineuse": "Sensibilité",
-    "Vision_Peri": "Vision périphérique",
-    "Confort_Visuel": "Confort"
-}
-
-# Construction des deux versions : brute + radar-friendly
-scores_subjectifs_raw = {
-    var: donnees.get(var)
-    for var in variables_subjectives
-    if var in donnees and pd.notnull(donnees[var])
-}
-
-scores_subjectifs_radar = {
-    labels_readables[var]: int(val)
-    for var, val in scores_subjectifs_raw.items()
-    if var in labels_readables and pd.notnull(val)
-}
-
-# 📊 Radar + 📋 Valeurs
-col_g, col_d = st.columns([6, 4])
-
-with col_g:
-    st.markdown("### 📊 Radar subjectif")
-    if scores_subjectifs_radar:
-        afficher_radar(scores_subjectifs_radar)
-    else:
-        st.info("Aucune donnée subjective à afficher dans le radar.")
-
-with col_d:
-    st.markdown("### 📋 Valeurs saisies")
-    for var in variables_subjectives:
-        val = scores_subjectifs_raw.get(var)
-        if pd.notnull(val):
-            label = labels_readables.get(var, var.replace("_", " "))
-            st.markdown(f"""
-                <div style='background-color: #eaeaea; padding: 10px 14px; border-radius: 8px;
-                            margin-bottom: 10px; font-weight: bold; color: #333;'>
-                    {label} : <span style='float:right;'>🧭 {int(val)}/3</span>
-                </div>
-            """, unsafe_allow_html=True)
-
+    # 🎯 Carte score global subjectif
+    st.markdown(f"""
+    <div style='background-color: #1e3a5f; padding: 20px; border-radius: 12px; text-align: center; color: white; margin-bottom: 20px;'>
+        <h4>🎯 Score global de perception (subjectif)</h4>
+        <div style='font-size: 2.8em; font-weight: bold; color: #66ccff;'>{resultat['indice_subjectif']} %</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Variables subjectives (valeurs brutes + labels)
+    variables_subjectives = [
+        "Decision_Visuelle", "Fatigue_Visuelle", "Sensibilite_Lumineuse",
+        "Vision_Peri", "Confort_Visuel"
+    ]
+    
+    labels_readables = {
+        "Decision_Visuelle": "Décision",
+        "Fatigue_Visuelle": "Fatigue",
+        "Sensibilite_Lumineuse": "Sensibilité",
+        "Vision_Peri": "Vision périphérique",
+        "Confort_Visuel": "Confort"
+    }
+    
+    # Scores pour affichage radar
+    scores_subjectifs_radar = {
+        labels_readables[var]: noter(var, donnees.get(var))
+        for var in variables_subjectives
+        if var in donnees and pd.notnull(donnees[var])
+    }
+    
+    # 📊 Radar + 📋 Valeurs saisies
+    col_g, col_d = st.columns([6, 4])
+    
+    with col_g:
+        st.markdown("### 📊 Radar subjectif")
+        if scores_subjectifs_radar:
+            afficher_radar(scores_subjectifs_radar)
+        else:
+            st.info("Aucune donnée subjective à afficher dans le radar.")
+    
+    with col_d:
+        st.markdown("### 📋 Valeurs saisies")
+        for var in variables_subjectives:
+            val = donnees.get(var)
+            if pd.notnull(val):
+                label = labels_readables.get(var, var)
+                st.markdown(f"""
+                    <div style='background-color: #eaeaea; padding: 10px 14px; border-radius: 8px;
+                                margin-bottom: 10px; font-weight: bold; color: #333;'>
+                        {label} : <span style='float:right;'>📝 {val}</span>
+                    </div>
+                """, unsafe_allow_html=True)
