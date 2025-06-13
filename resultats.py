@@ -198,7 +198,7 @@ for indicateur in indicateurs_jauge:
             message = "Difficulté à détecter les faibles contrastes."
             couleur_fond = "#EE8959"  # Mandarin
 
-        col = col1 if compteur % 2 == 0 else col2
+    col = col1 if compteur % 2 == 0 else col2
         with col:
             st.markdown(
                 f"""
