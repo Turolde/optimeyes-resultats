@@ -90,7 +90,7 @@ if subjectif_seul:
 
     col_g, col_d = st.columns([6, 4])
     with col_g:
-        st.markdown("### 📊 Radar subjectif")
+        st.markdown("### 📊 Radar d'autodiagnostique")
         if scores_subjectifs_radar:
             afficher_radar(scores_subjectifs_radar)
         else:
