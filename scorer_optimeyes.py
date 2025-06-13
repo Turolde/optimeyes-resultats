@@ -234,36 +234,36 @@ def afficher_radar(valeurs, taille=(4, 4), titre=None):
 
 
 def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_colors=None):
-    import matplotlib.pyplot as plt
+    # Couleurs par défaut (si aucune spécifique n’est fournie)
+    default_colors = ["#ff4d4d", "#ff944d", "#ffd633", "#4caf50", "#2196f3", "#9c27b0"]
+    couleurs = custom_colors if custom_colors else default_colors
 
-    # Construction des bornes : bornes_abs = [borne1, borne2, ...]
     try:
-        bornes = [float(b) for b in bornes_abs if str(b).strip() != ""]
+        bornes = sorted([float(b) for b in bornes_abs if str(b).strip() != ""])
     except:
         bornes = []
 
     bornes = [min_val] + bornes + [max_val]
     zones = list(zip(bornes[:-1], bornes[1:]))
-    nb_zones = len(zones)
 
-    # Couleurs à utiliser : palette personnalisée ou défaut
-    default_colors = ["#ff4d4d", "#ff944d", "#ffd633", "#4caf50", "#2196f3", "#9c27b0"]
-    couleurs = custom_colors if custom_colors else default_colors
-    couleurs_utiles = couleurs[:nb_zones] if len(couleurs) >= nb_zones else couleurs + ["#cccccc"] * (nb_zones - len(couleurs))
-
-    # Création de la figure
     fig, ax = plt.subplots(figsize=(5, 0.6))
-    fig.patch.set_facecolor('#cccaca')  # Fond global
-    ax.set_facecolor('#e0e0e0')         # Fond de la jauge
+    fig.patch.set_facecolor('#cccaca')  # Fond global du graphique
+    ax.set_facecolor('#e0e0e0')         # Fond de la jauge (zone d’affichage)
 
     for i, (start, end) in enumerate(zones):
-        ax.barh(0, end - start, left=start, color=couleurs_utiles[i], edgecolor="white")
+        color = couleurs[i] if i < len(couleurs) else "#cccccc"
+        ax.barh(0, end - start, left=start, color=color, edgecolor="white")
 
-    # Trait et valeur
     ax.axvline(valeur, color="#004080", linewidth=1)
-    ax.text(valeur, -0.6, f"{valeur:.0f}", ha='center', va='top', fontsize=11, color="#004080", fontweight='bold')
-
-    # Habillage
+    ax.text(
+        valeur, -0.6,  # position (x, y), y en dessous de la barre horizontale
+        f"{valeur:.0f}",  # texte affiché (arrondi entier)
+        ha='center',
+        va='top',
+        fontsize=11,
+        color="#004080",
+        fontweight='bold'
+    )
     ax.set_xlim(min_val, max_val)
     ax.set_yticks([])
     ax.set_xticks([min_val, max_val])
@@ -272,3 +272,4 @@ def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_co
         spine.set_visible(False)
 
     return fig
+    
