@@ -83,9 +83,10 @@ couleur_coherence = {
 }.get(resultat["coherence"], "#cccccc")
 
 st.markdown(
-    f"""<div style='margin-top: 20px; padding: 15px; border-radius: 10px; background-color: #2a2a2a; color: white;'>
-        <p>🔍 <strong>Cohérence entre perception et performance :</strong>
-        <span style='color: {couleur_coherence}; font-weight: bold;'> {resultat["coherence"]}</span></p>
+    f"""<div style='margin-top: 20px; padding: 15px; border-radius: 10px; 
+                 background-color: #2a2a2a; color: white; text-align: center;'>
+        <p>🔍 <strong>Cohérence entre perception et performance :</strong><br>
+        <span style='color: {couleur_coherence}; font-weight: bold; font-size: 1.2em;'>{resultat["coherence"]}</span></p>
     </div>""",
     unsafe_allow_html=True
 )
