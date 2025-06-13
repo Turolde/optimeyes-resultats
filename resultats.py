@@ -193,7 +193,7 @@ for indicateur in indicateurs_jauge:
             badge = "🟢 Bonne vision faible contraste"
             message = "Aucune difficulté détectée en faible contraste."
             couleur_fond = "#2A9D8F"  # Persian Green
-        else:
+       else:
             badge = "🔴 Échec ou difficulté"
             message = "Difficulté à détecter les faibles contrastes."
             couleur_fond = "#EE8959"  # Mandarin
