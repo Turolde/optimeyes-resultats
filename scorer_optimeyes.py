@@ -233,42 +233,36 @@ def afficher_radar(valeurs, taille=(4, 4), titre=None):
     st.pyplot(fig)
 
 
-def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=[], custom_colors=None):
-    # Couleurs par défaut cohérentes avec l'app principale
-    default_colors = ["#ff4d4d", "#ff944d", "#ffd633", "#4caf50", "#2196f3", "#9c27b0"]
-    couleurs = custom_colors if custom_colors else default_colors
+def plot_jauge_multizone(nom, valeur, min_val, max_val, bornes_abs=None, couleurs=None):
+    import matplotlib.pyplot as plt
 
-    try:
-        bornes = sorted([float(b) for b in bornes_abs if str(b).strip() != ""])
-    except:
-        bornes = []
+    fig, ax = plt.subplots(figsize=(5, 1.2))
 
-    bornes = [min_val] + bornes + [max_val]
-    zones = list(zip(bornes[:-1], bornes[1:]))
+    # Valeurs par défaut si non fournies
+    if bornes_abs is None:
+        bornes_abs = []
+    bornes = [min_val] + [b for b in bornes_abs if b is not None] + [max_val]
+    bornes = sorted(set(float(b) for b in bornes))
 
-    fig, ax = plt.subplots(figsize=(5, 0.6))
-    fig.patch.set_facecolor('#cccaca')
-    ax.set_facecolor('#e0e0e0')
+    if couleurs is None or len(couleurs) < len(bornes) - 1:
+        couleurs = ["#cccccc"] * (len(bornes) - 1)  # fallback gris
 
-    for i, (start, end) in enumerate(zones):
-        color = couleurs[i] if i < len(couleurs) else "#cccccc"
-        ax.barh(0, end - start, left=start, color=color, edgecolor="white")
+    for i in range(len(bornes) - 1):
+        ax.barh(0, width=bornes[i+1] - bornes[i], left=bornes[i], height=0.5, color=couleurs[i], edgecolor='black')
 
-    ax.axvline(valeur, color="#004080", linewidth=1)
-    ax.text(
-        valeur, -0.6,
-        f"{valeur:.0f}",
-        ha='center',
-        va='top',
-        fontsize=11,
-        color="#004080",
-        fontweight='bold'
-    )
+    # Curseur de valeur
+    ax.axvline(valeur, color='black', linewidth=2)
+    ax.text(valeur, 0.55, f"{valeur:.0f}", ha='center', va='bottom', fontsize=10, fontweight='bold', color='black')
+
     ax.set_xlim(min_val, max_val)
     ax.set_yticks([])
     ax.set_xticks([min_val, max_val])
-    ax.set_title(nom, fontsize=13, loc='left')
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+    ax.set_title(nom, fontsize=10, loc='left')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_color('#888')
 
+    plt.tight_layout()
     return fig
+
