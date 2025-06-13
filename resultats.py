@@ -116,7 +116,7 @@ st.markdown("""
     <hr style="margin-top: 2em; margin-bottom: 1em; border: none; height: 2px;
     background: linear-gradient(to right, #ff6f91, #ff9671, #ffc75f, #d65db1);">
 
-    <div style="background-color: #ffe4ec; padding: 16px; border-radius: 12px;
+    <div style="background-color: #357273; padding: 16px; border-radius: 12px;
     text-align: center; font-size: 0.9em; color: #802f4e;">
 
     👩‍⚕️ <strong>Brigitte EKPE LORDONNOIS</strong> · Fondatrice<br>
