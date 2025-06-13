@@ -169,15 +169,15 @@ seuils_reference = {
 col1, col2 = st.columns(2)
 compteur = 0
 
-for cle_logique, nom_indicateur in mapping_indicateurs.items():
-    if nom_indicateur == "Stereopsie" and not donnees.get("Stereopsie_activee", True):
+for cle_logique, indicateur in mapping_indicateurs.items():
+    if indicateur == "Stereopsie" and not donnees.get("Stereopsie_activee", True):
         continue
 
-    valeur = donnees.get(nom_indicateur)
+    valeur = donnees.get(indicateur)
     if pd.isnull(valeur):
         continue
 
-    seuils = seuils_reference.get(nom_indicateur, {"min": 0, "max": 100})
+    seuils = seuils_reference.get(indicateur, {"min": 0, "max": 100})
     bornes = [seuils.get(f"borne{i}") for i in range(1, 5)]
 
 # Couleurs adaptées
@@ -224,7 +224,7 @@ for cle_logique, nom_indicateur in mapping_indicateurs.items():
         couleurs = None
 
     fig = plot_jauge_multizone(
-        nom=nom_indicateur,
+        nom=indicateur,
         valeur=valeur,
         min_val=seuils["min"],
         max_val=seuils["max"],
@@ -236,7 +236,7 @@ for cle_logique, nom_indicateur in mapping_indicateurs.items():
         st.pyplot(fig)
 
         # VRAI commentaire associé
-        commentaire = resultat["commentaires"].get(nom_indicateur, "")
+        commentaire = resultat["commentaires"].get(indicateur, "")
         if commentaire and isinstance(commentaire, str) and not commentaire.lower().startswith("score"):
             st.markdown(f"<span style='font-size: 0.9em; color: grey;'>{commentaire}</span>", unsafe_allow_html=True)
 
