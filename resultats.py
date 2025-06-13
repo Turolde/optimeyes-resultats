@@ -107,6 +107,19 @@ if subjectif_seul:
                         {label} : <span style='float:right;'>📝 {val}</span>
                     </div>
                 """, unsafe_allow_html=True)
+    st.markdown("""
+    <hr style="margin-top: 2em; margin-bottom: 1em; border: none; height: 2px;
+    background: linear-gradient(to right, #ff6f91, #ff9671, #ffc75f, #d65db1);">
+
+    <div style="background-color: #ffe4ec; padding: 15px; border-radius: 12px;
+    text-align: center; font-size: 0.9em; color: #802f4e;">
+
+    🌸 <strong>Optimeyes</strong> · Évaluation visuo-cognitive & profilage de performance<br>
+    👩‍⚕️ <strong>Brigitte EKPE LORDONNOIS</strong><br>
+    🔗 <a href="https://optimeyes.fr" target="_blank"
+        style="color: #d65db1; font-weight: bold;">Visitez optimeyes.fr</a>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Cas 2 : passeport complet
 else:
